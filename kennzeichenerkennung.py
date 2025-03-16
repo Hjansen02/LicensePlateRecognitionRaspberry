@@ -14,7 +14,7 @@ GPIO.setup(LED_PIN, GPIO.OUT)
 dauer_global = 25
 
 def lade_tabelle():
-    tb = pd.read_excel(Pfad)  #Pfad zum laden der Tabelle !!!!!!
+    tb = pd.read_excel(Pfad)  #Path to the plate table !!!!!!
     return tb["Kennzeichen"].tolist()
 
 def open_door():
@@ -23,7 +23,7 @@ def open_door():
     GPIO.output(18, False)
     
 def blink_led():
-    end_time = time.time() + dauer_global
+    end_time = time.time() + time_global
     while time.time() < end_time:
         GPIO.output(LED_PIN, True)
         time.sleep(0.5)
@@ -36,7 +36,7 @@ def process_frame(frame):
     results = alpr.recognize_file('temp.jpg')
     
     for plate in results['results']:
-        print("Erkanntes Kennzeichen:", plate['plate'])
+        print("Plate Recognised:", plate['plate'])
         if plate['plate'] in allowed_plates:
            open_door()
            blink_led()
@@ -67,10 +67,10 @@ def manual_close():
     GPIO.output(18, False)
     GPIO.output(LED_PIN, False)
     
-def set_dauer(value):
-    global dauer_global
-    dauer_global = int(value)
-    messagebox.showinfo("Info", f"Dauer auf {dauer_global} Sekunden gesetzt")
+def set_duration(value):
+    global time_global
+    time_global = int(value)
+    messagebox.showinfo("Info", f"Time opened set to: {time_global}.")
 
 alpr = Alpr("eu", "/path/to/openalpr.conf", "/path/to/runtime_data")
 if not alpr.is_loaded():
@@ -98,7 +98,7 @@ button_open.pack(pady=5)
 button_close = tk.Button(root, text="Tor schließen", command=manual_close)
 button_close.pack(pady=5)
 
-scale_dauer = tk.Scale(root, from_=5, to=60, orient="horizontal", label="Dauer (Sekunden)", command=set_dauer)
+scale_dauer = tk.Scale(root, from_=5, to=60, orient="horizontal", label="Dauer (Sekunden)", command=set_duration)
 scale_dauer.set(dauer_global)
 scale_dauer.pack(pady=5)
 
